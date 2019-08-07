@@ -1,0 +1,63 @@
+require 'rails_helper'
+
+RSpec.describe "Tasks API", type: :request do
+  describe "PATCH /tasks" do
+    let!(:task) {create :task}
+    
+    context "when new title is present" do
+      let(:valid_attrs) {{title: Faker::Superhero.name}}
+      before {patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: valid_attrs}}}
+      
+      it "returns status code 200" do
+        expect(response.content_type).to eq("application/json")
+        expect(response).to have_http_status(:ok)
+      end
+      
+      it "returns modified Task" do
+        expect(json['data']['attributes']['title']).to eql(valid_attrs[:title])
+        expect(json['data']['id'].to_i).to eql(task.id)
+      end
+    end
+    
+    context "when data is invalid" do
+      after do
+        expect(Task.count).to eq 1
+      end
+      
+      it "returns http code 404 when Task is not found" do
+        patch "/api/v1/tasks/0", params: {data: {attributes: {}}}
+        expect(response).to have_http_status(:not_found)
+      end
+      
+      it "doest't update Task if missing title" do
+        expect{patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {}}}}.to raise_error(ActionController::ParameterMissing)
+      end
+
+      it "doest't update Task if blank title" do
+        patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {title: ''}}}
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json['errors'].first['title']).to eql('"title" can\'t be blank')
+      end
+    end
+    
+    context "security" do
+      it "doesn't update attributes other than 'title'" do
+        task = create(:task)
+        old_task_attributes = OpenStruct.new(task.attributes)
+        
+        patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {
+          title: Faker::Superhero.name,
+          id: 0,
+          created_at: 0
+        }}}
+        
+        task.reload
+        
+        expect(task.id).to eql(old_task_attributes.id)
+        expect(task.created_at).to eql(old_task_attributes.created_at)
+
+        expect(task.title).not_to eql(old_task_attributes.title)
+      end
+    end
+  end
+end
