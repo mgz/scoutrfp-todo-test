@@ -38,7 +38,7 @@ RSpec.describe "Tasks API", type: :request do
 
       json['data'][0]['relationships']['tags']['data'].tap do |data|
         expect(data.size).to eql(2)
-        expect(data.map{|tag| tag['name']}).to match_array(task.tag_list)
+        expect(data.map{|tag| tag['title']}).to match_array(task.tag_list)
       end
     end
   end
