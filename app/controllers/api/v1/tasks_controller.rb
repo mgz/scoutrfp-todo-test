@@ -1,6 +1,6 @@
 class Api::V1::TasksController < ApplicationController
   def index
-    tasks = Task.all
+    tasks = Task.all.includes(:tags)
     render json: tasks
   end
   

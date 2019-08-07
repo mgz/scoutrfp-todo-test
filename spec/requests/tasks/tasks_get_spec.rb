@@ -20,9 +20,26 @@ RSpec.describe "Tasks API", type: :request do
       
       received_titles = json['data'].map{|rec| rec.dig('attributes', 'title')}
       expect(received_titles).to match_array(tasks.map{|t| t.title})
+    end
+  end
+  
+  describe "GET /tasks (Expect Tags)" do
+    it "Tasks have Tags" do
+      task = create(:task)
+      task.tag_list = [Faker::Superhero.unique.name, Faker::Superhero.unique.name]
+      task.save!
+      task.reload
       
-      # expect(parsed_json['data'].first).to eql(titles.first)
-      # expect(parsed_json['data'].second).to eql(titles.second)
+      get '/api/v1/tasks'
+      expect(json['data'][0]).to have_type('tasks')
+      
+      expect(json['data'][0]['relationships']).to be_present
+      expect(json['data'][0]['relationships']['tags']).to be_present
+
+      json['data'][0]['relationships']['tags']['data'].tap do |data|
+        expect(data.size).to eql(2)
+        expect(data.map{|tag| tag['name']}).to match_array(task.tag_list)
+      end
     end
   end
 end
