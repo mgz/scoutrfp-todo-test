@@ -29,7 +29,7 @@ class Api::V1::TasksController < ApplicationController
           errors: task.errors.map do |attr, error|
             {
               status: 422,
-              title: "\"#{attr.to_s}\" #{error}"
+              title: attr == :base ? error : "\"#{attr.to_s}\" #{error}"
             }
           end
         }, status: :unprocessable_entity
