@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  # For details on connection pooling, see Rails configuration guide
+  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: scoutrfp_development
+
+test:
+  <<: *default
+  database: scoutrfp_test
+
+production:
+  <<: *default
+  database: scoutrfp_production
+  username: scoutrfp
+  password: <%= ENV['SCOUTRFP_DATABASE_PASSWORD'] %>

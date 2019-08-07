@@ -3,7 +3,7 @@ class TaskSerializer < ActiveModel::Serializer
   has_many :tags
   
   def tags
-    object.tags.map do |tag|
+    object.tags.sort_by(&:id).map do |tag|
       {
         id: tag.id.to_s,
         title: tag.name
