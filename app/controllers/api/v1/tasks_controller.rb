@@ -22,6 +22,10 @@ class Api::V1::TasksController < ApplicationController
   
   def update
     if (task = Task.find_by_id(params[:id]))
+      if (tag_list = params.dig(:data, :attributes, :tags)).present?
+        task.tag_list = tag_list
+        task_params.delete(:tags)
+      end
       if task.update(task_params)
         render json: task
       else

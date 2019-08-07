@@ -19,6 +19,35 @@ RSpec.describe "Tasks API", type: :request do
       end
     end
     
+    context "tag management" do
+      it "can add tags" do
+        new_tags = ["Tag one", "Tag Two"]
+        patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {
+          tags: new_tags
+        }}}
+
+        json['data']['relationships']['tags']['data'].tap do |data|
+          expect(data.map{|tag| tag['name']}).to match_array(new_tags)
+        end
+      end
+      
+      it "can remove all tags" do
+        task.tag_list = ["Tag one", "Tag Two"]
+        task.save!
+        task.reload
+        expect(task.tag_list.size).to eql(2)
+        
+        patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {
+          tags: []
+        }}}
+
+        task.reload
+        expect(task.tag_list.size).to eql(0)
+  
+        expect(json['data']['relationships']['tags']['data'].length).to eql(0)
+      end
+    end
+    
     context "when data is invalid" do
       after do
         expect(Task.count).to eq 1
@@ -29,7 +58,7 @@ RSpec.describe "Tasks API", type: :request do
         expect(response).to have_http_status(:not_found)
       end
       
-      it "doest't update Task if missing title" do
+      it "doest't update Task if missing title and tags" do
         expect{patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {}}}}.to raise_error(ActionController::ParameterMissing)
       end
 
