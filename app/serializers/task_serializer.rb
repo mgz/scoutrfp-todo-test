@@ -5,7 +5,7 @@ class TaskSerializer < ActiveModel::Serializer
   def tags
     object.tags.map do |tag|
       {
-        id: tag.id,
+        id: tag.id.to_s,
         name: tag.name
       }
     end
