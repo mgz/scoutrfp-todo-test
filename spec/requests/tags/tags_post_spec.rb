@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Tags API", type: :request do
-  describe "POST /tags" do
+RSpec.describe "/tags", type: :request do
+  describe "POST" do
     context "when title is present" do
       let(:valid_attrs) {{title: Faker::Superhero.name}}
       before {post '/api/v1/tags', params: {data: {attributes: valid_attrs}}}

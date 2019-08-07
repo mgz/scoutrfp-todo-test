@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Tags API", type: :request do
-  describe "PATCH /tags" do
+RSpec.describe "/tags", type: :request do
+  describe "PATCH" do
     let!(:tag) {create :tag}
     
     context "when new title is present" do

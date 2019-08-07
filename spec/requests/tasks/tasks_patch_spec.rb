@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Tasks API", type: :request do
-  describe "PATCH /tasks" do
+RSpec.describe "/tasks", type: :request do
+  describe "PATCH" do
     let!(:task) {create :task}
     
     context "when new title is present" do

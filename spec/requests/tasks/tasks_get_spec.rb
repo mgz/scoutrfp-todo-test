@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Tasks API", type: :request do
-  describe "GET /tasks" do
+RSpec.describe "/tasks", type: :request do
+  describe "GET" do
     let!(:tasks) {create_list(:task, 10)}
     before {get '/api/v1/tasks'}
     
@@ -23,7 +23,7 @@ RSpec.describe "Tasks API", type: :request do
     end
   end
   
-  describe "GET /tasks (Expect Tags)" do
+  describe "GET (Expect Tags)" do
     it "Tasks have Tags" do
       task = create(:task)
       task.tag_list = [Faker::Superhero.unique.name, Faker::Superhero.unique.name]

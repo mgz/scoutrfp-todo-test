@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe Task, type: :model do
-  describe "Tags" do
+RSpec.describe "Task model", type: :model do
+  describe "is taggable" do
     let!(:tasks) {create_list(:task, 10)}
     let!(:tag) {Faker::Superhero.unique.name}
     it "can add Tags" do

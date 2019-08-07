@@ -1,7 +1,7 @@
 require 'rails_helper'
 
-RSpec.describe "Tags API", type: :request do
-  describe "GET /tags" do
+RSpec.describe "/tags", type: :request do
+  describe "GET" do
     let!(:tags) {create_list(:tag, 10)}
     before {get '/api/v1/tags'}
     
