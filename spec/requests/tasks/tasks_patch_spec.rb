@@ -38,6 +38,12 @@ RSpec.describe "Tasks API", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json['errors'].first['title']).to eql('"title" can\'t be blank')
       end
+
+      it "doest't update Task with too long title" do
+        patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {title: "X" * 201}}}
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(json['errors'].first['title']).to eql('"title" is too long (maximum is 200 characters)')
+      end
     end
     
     context "security" do
