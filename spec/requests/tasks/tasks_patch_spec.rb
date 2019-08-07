@@ -69,6 +69,10 @@ RSpec.describe "Tasks API", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
         expect(json['errors'].first['title']).to eql('"title" is too long (maximum is 200 characters)')
       end
+      
+      it 'throws when resource ids differ in query string and request body' do
+        expect{patch "/api/v1/tasks/0", params: {data: {id: 1, ttributes: {title: 'good'}}}}.to raise_error(ArgumentError)
+      end
     end
     
     context "security" do
