@@ -49,10 +49,6 @@ RSpec.describe "Tasks API", type: :request do
     end
     
     context "when data is invalid" do
-      after do
-        expect(Task.count).to eq 1
-      end
-      
       it "returns http code 404 when Task is not found" do
         patch "/api/v1/tasks/0", params: {data: {attributes: {}}}
         expect(response).to have_http_status(:not_found)
