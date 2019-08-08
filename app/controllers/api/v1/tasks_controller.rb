@@ -11,14 +11,7 @@ class Api::V1::TasksController < ApplicationController
     if task.save
       render json: task
     else
-      render json: {
-        errors: task.errors.map do |attr, error|
-          {
-            status: 422,
-            title: "\"#{attr.to_s}\" #{error}"
-          }
-        end
-      }, status: :unprocessable_entity
+      render_jsonapi_error_for(task)
     end
   end
   
@@ -26,14 +19,7 @@ class Api::V1::TasksController < ApplicationController
     if TaskUpdater.call(@task, task_params, self)
       render json: @task
     else
-      render json: {
-        errors: @task.errors.map do |attr, error|
-          {
-            status: 422,
-            title: attr == :base ? error : "\"#{attr.to_s}\" #{error}"
-          }
-        end
-      }, status: :unprocessable_entity
+      render_jsonapi_error_for(@task)
     end
   end
   

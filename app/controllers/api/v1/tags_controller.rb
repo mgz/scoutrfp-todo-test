@@ -9,14 +9,7 @@ class Api::V1::TagsController < ApplicationController
     if tag.save
       render json: tag
     else
-      render json: {
-        errors: tag.errors.map do |attr, error|
-          {
-            status: 422,
-            title: "\"#{attr.to_s}\" #{error}"
-          }
-        end
-      }, status: :unprocessable_entity
+      render_jsonapi_error_for(tag)
     end
   end
 
@@ -25,14 +18,7 @@ class Api::V1::TagsController < ApplicationController
       if tag.update(tag_params)
         render json: tag
       else
-        render json: {
-          errors: tag.errors.map do |attr, error|
-            {
-              status: 422,
-              title: "\"#{attr.to_s}\" #{error}"
-            }
-          end
-        }, status: :unprocessable_entity
+        render_jsonapi_error_for(tag)
       end
     else
       render json: {
