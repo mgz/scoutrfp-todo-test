@@ -30,5 +30,17 @@ RSpec.describe "Task model", type: :model do
       expect(Task.tagged_with(tag).size).to eql(0)
       expect(task.tags.count).to eql(2)
     end
+    
+    it "can have comma in Tag title" do
+      task = Task.first
+  
+      tag_with_comma = 'Some, Tag'
+      task.tag_list = tag_with_comma
+      task.save!
+      task.reload
+      
+      expect(task.tag_list.size).to eql(1)
+      expect(task.tag_list).to match_array([tag_with_comma])
+    end
   end
 end
