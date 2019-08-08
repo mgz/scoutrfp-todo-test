@@ -18,4 +18,15 @@ class ApplicationController < ActionController::API
       end
     }, status: :unprocessable_entity
   end
+  
+  def render_resource_not_found(klass)
+    render json: {
+      errors: [
+        {
+          status: 404,
+          title: "#{klass.name} not found"
+        }
+      ]
+    }, status: :not_found
+  end
 end

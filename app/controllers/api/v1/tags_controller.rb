@@ -21,14 +21,7 @@ class Api::V1::TagsController < ApplicationController
         render_jsonapi_error_for(tag)
       end
     else
-      render json: {
-        errors: [
-          {
-            status: 404,
-            title: "Tag not found"
-          }
-        ]
-      }, status: :not_found
+      render_resource_not_found(Tag)
     end
   end
 

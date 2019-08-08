@@ -45,14 +45,7 @@ class Api::V1::TasksController < ApplicationController
 
   def find_task
     unless (@task = Task.find_by_id(params[:id]))
-      render json: {
-        errors: [
-          {
-            status: 404,
-            title: "Task not found"
-          }
-        ]
-      }, status: :not_found
+      render_resource_not_found(Task)
       return false
     end
   end
