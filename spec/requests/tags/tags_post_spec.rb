@@ -49,7 +49,7 @@ RSpec.describe "/tags", type: :request do
       }}}
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json['errors'][0]['title']).to eql('"title" has already been taken')
+      expect(json['errors'][0]['title']).to eql('Tag is not unique')
       
     end
 

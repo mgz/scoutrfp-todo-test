@@ -1,4 +1,6 @@
 class Api::V1::TagsController < ApplicationController
+  rescue_from ActiveRecord::RecordNotUnique, with: :render_record_not_unique
+  
   def index
     tags = Tag.all
     render json: tags
@@ -19,5 +21,16 @@ class Api::V1::TagsController < ApplicationController
   private
   def tag_params
     params.require(:data).require(:attributes).permit(:title)
+  end
+  
+  def render_record_not_unique
+    render json: {
+      errors: [
+        {
+          status: 422,
+          title: "Tag is not unique"
+        }
+      ]
+    }, status: :unprocessable_entity
   end
 end

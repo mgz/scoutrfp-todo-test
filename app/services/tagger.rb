@@ -24,8 +24,10 @@ class Tagger
   
   def save_new_tags
     @tags.uniq.each do |tag_title|
-      tag = Tag.find_or_create_by!(title: tag_title)
-      Tagging.find_or_create_by!(task_id: @task.id, tag_id: tag.id)
+      tag = Tag.find_or_create_by_threadsafe!(title: tag_title)
+      Tagging.find_or_create_by_threadsafe!(task_id: @task.id, tag_id: tag.id)
     end
   end
+  
+  
 end
