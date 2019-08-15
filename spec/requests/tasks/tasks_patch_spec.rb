@@ -52,6 +52,7 @@ RSpec.describe "/tasks", type: :request do
       it "returns http code 404 when Task is not found" do
         patch "/api/v1/tasks/0", params: {data: {attributes: {}}}
         expect(response).to have_http_status(:not_found)
+        expect(json['errors'].first['title']).to eql('Task not found')
       end
       
       it "doest't update Task if missing title and tags" do
