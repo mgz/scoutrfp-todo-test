@@ -1,8 +1,10 @@
 class TaskUpdater
   def self.call(task, params)
     tags = params[:tags]
-    set_task_tags(task, tags)
-    set_task_params(task, params)
+    task.transaction do
+      set_task_tags(task, tags)
+      set_task_params(task, params)
+    end
   end
   
   private
