@@ -7,15 +7,15 @@ RSpec.describe "/tags", type: :request do
     context "when new title is present" do
       let(:valid_attrs) {{title: Faker::Superhero.name}}
       before {patch "/api/v1/tags/#{tag.id}", params: {data: {attributes: valid_attrs}}}
+      after {expect_code_200}
       
       it "returns status code 200" do
-        expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:ok)
+
       end
       
       it "returns modified Tag" do
-        expect(json['data']['attributes']['title']).to eql(valid_attrs[:title])
-        expect(json['data']['id'].to_i).to eql(tag.id)
+        expect(response_at('data/attributes/title')).to eql(valid_attrs[:title])
+        expect(response_at('data/id').to_i).to eql(tag.id)
       end
     end
     
@@ -36,13 +36,13 @@ RSpec.describe "/tags", type: :request do
       it "doest't update Tag if blank title" do
         patch "/api/v1/tags/#{tag.id}", params: {data: {attributes: {title: ''}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" can\'t be blank')
+        expect(first_jsonapi_error).to eql('"title" can\'t be blank')
       end
 
       it "doest't update Tag with too long title" do
         patch "/api/v1/tags/#{tag.id}", params: {data: {attributes: {title: "X" * 201}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" is too long (maximum is 200 characters)')
+        expect(first_jsonapi_error).to eql('"title" is too long (maximum is 200 characters)')
       end
     end
   end

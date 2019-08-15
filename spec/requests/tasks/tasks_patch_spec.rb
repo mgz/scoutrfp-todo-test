@@ -9,13 +9,12 @@ RSpec.describe "/tasks", type: :request do
       before {patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: valid_attrs}}}
       
       it "returns status code 200" do
-        expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:ok)
+        expect_code_200
       end
       
       it "returns modified Task" do
-        expect(json['data']['attributes']['title']).to eql(valid_attrs[:title])
-        expect(json['data']['id'].to_i).to eql(task.id)
+        expect(response_at('data/attributes/title')).to eql(valid_attrs[:title])
+        expect(response_at('data/id').to_i).to eql(task.id)
       end
     end
     
@@ -27,7 +26,7 @@ RSpec.describe "/tasks", type: :request do
           tags: new_tags
         }}}
 
-        json['data']['relationships']['tags']['data'].tap do |data|
+        response_at('data/relationships/tags/data').tap do |data|
           expect(data.map{|tag| tag['title']}).to match_array(new_tags)
         end
       end
@@ -43,9 +42,9 @@ RSpec.describe "/tasks", type: :request do
         }}}
 
         task.reload
+        
         expect(task.tags.count).to eql(0)
-                
-        expect(json['data']['relationships']['tags']['data'].length).to eql(0)
+        expect(response.body).to have_json_size(0).at_path('data/relationships/tags/data')
       end
     end
     
@@ -53,7 +52,7 @@ RSpec.describe "/tasks", type: :request do
       it "returns http code 404 when Task is not found" do
         patch "/api/v1/tasks/0", params: {data: {attributes: {}}}
         expect(response).to have_http_status(:not_found)
-        expect(json['errors'].first['title']).to eql('Task not found')
+        expect(first_jsonapi_error).to eql('Task not found')
       end
       
       it "doest't update Task if missing title and tags" do
@@ -63,13 +62,13 @@ RSpec.describe "/tasks", type: :request do
       it "doest't update Task if blank title" do
         patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {title: ''}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" can\'t be blank')
+        expect(first_jsonapi_error).to eql('"title" can\'t be blank')
       end
 
       it "doest't update Task with too long title" do
         patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {title: "X" * 201}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" is too long (maximum is 200 characters)')
+        expect(first_jsonapi_error).to eql('"title" is too long (maximum is 200 characters)')
       end
       
       it "throws when resource ids differ in query string and request body" do
@@ -80,7 +79,7 @@ RSpec.describe "/tasks", type: :request do
         many_tags = Array.new(Task::MAX_TAGS + 1){Faker::Superhero.unique.new}
         patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {tags: many_tags}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql("Too many tags (max #{Task::MAX_TAGS} allowed)")
+        expect(first_jsonapi_error).to eql("Too many tags (max #{Task::MAX_TAGS} allowed)")
       end
     end
     
@@ -99,7 +98,6 @@ RSpec.describe "/tasks", type: :request do
         
         expect(task.id).to eql(old_task_attributes.id)
         expect(task.created_at).to eql(old_task_attributes.created_at)
-
         expect(task.title).not_to eql(old_task_attributes.title)
       end
     end

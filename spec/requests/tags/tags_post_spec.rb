@@ -5,10 +5,10 @@ RSpec.describe "/tags", type: :request do
     context "when title is present" do
       let(:valid_attrs) {{title: Faker::Superhero.name}}
       before {post '/api/v1/tags', params: {data: {attributes: valid_attrs}}}
+      after {expect_code_200}
       
       it "returns status code 201" do
-        expect(response.content_type).to eq("application/json")
-        expect(response).to have_http_status(:ok)
+
       end
       
       it "returns created Tag" do
@@ -32,13 +32,13 @@ RSpec.describe "/tags", type: :request do
       it "rejects Tag with blank title" do
         post '/api/v1/tags', params: {data: {attributes: {title: ''}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" can\'t be blank')
+        expect(first_jsonapi_error).to eql('"title" can\'t be blank')
       end
       
       it "rejects Tag with too long title" do
         post '/api/v1/tags', params: {data: {attributes: {title: "X" * 201}}}
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(json['errors'].first['title']).to eql('"title" is too long (maximum is 200 characters)')
+        expect(first_jsonapi_error).to eql('"title" is too long (maximum is 200 characters)')
       end
     end
 
@@ -49,7 +49,7 @@ RSpec.describe "/tags", type: :request do
       }}}
 
       expect(response).to have_http_status(:unprocessable_entity)
-      expect(json['errors'][0]['title']).to eql('Tag is not unique')
+      expect(first_jsonapi_error).to eql('Tag is not unique')
       
     end
 
