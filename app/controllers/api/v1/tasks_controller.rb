@@ -12,6 +12,7 @@ class Api::V1::TasksController < ApplicationController
   
   def update
     TaskUpdater.call(task, task_params)
+    task.reload
     render json: task
   end
   

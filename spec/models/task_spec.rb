@@ -7,40 +7,55 @@ RSpec.describe "Task model", type: :model do
     it "can add Tags" do
       task = Task.first
   
-      task.tag_list.add(tag)
+      Tagger.new(task, [tag]).save_tags
       task.save!
       task.reload
       
-      expect(Task.tagged_with(tag).size).to eql(1)
+      expect(Tagging.last.task.id).to eql(task.id)
+      expect(Tagging.last.tag.title).to eql(tag)
     end
 
     it "can change Tags" do
       task = Task.first
 
-      task.tag_list.add(tag)
+      Tagger.new(task, [tag]).save_tags
       task.save!
       task.reload
   
-      expect(Task.tagged_with(tag).size).to eql(1)
+      expect(task.tags.count).to eql(1)
 
-      task.tag_list = [Faker::Superhero.unique.name, Faker::Superhero.unique.name]
+      Tagger.new(task, [Faker::Superhero.unique.name, Faker::Superhero.unique.name]).save_tags
       task.save!
       task.reload
 
-      expect(Task.tagged_with(tag).size).to eql(0)
       expect(task.tags.count).to eql(2)
+    end
+    
+    it "can delete tags" do
+      task = Task.first
+      Tagger.new(task, [tag]).save_tags
+      task.save!
+      task.reload
+
+      expect(Tagging.count).to eql(1)
+
+      Tagger.new(task, []).save_tags
+      task.save!
+      task.reload
+
+      expect(task.tags.count).to eql(0)
     end
     
     it "can have comma in Tag title" do
       task = Task.first
   
       tag_with_comma = 'Some, Tag'
-      task.tag_list = tag_with_comma
+      Tagger.new(task, [tag_with_comma]).save_tags
       task.save!
       task.reload
       
-      expect(task.tag_list.size).to eql(1)
-      expect(task.tag_list).to match_array([tag_with_comma])
+      expect(task.tags.count).to eql(1)
+      expect(task.tags.map(&:title)).to match_array([tag_with_comma])
     end
   end
 end

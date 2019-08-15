@@ -26,7 +26,7 @@ RSpec.describe "/tasks", type: :request do
   describe "GET (Expect Tags)" do
     it "Tasks have Tags" do
       task = create(:task)
-      task.tag_list = [Faker::Superhero.unique.name, Faker::Superhero.unique.name]
+      Tagger.new(task, [Faker::Superhero.unique.name, Faker::Superhero.unique.name]).save_tags
       task.save!
       task.reload
       
@@ -38,7 +38,7 @@ RSpec.describe "/tasks", type: :request do
 
       json['data'][0]['relationships']['tags']['data'].tap do |data|
         expect(data.size).to eql(2)
-        expect(data.map{|tag| tag['title']}).to match_array(task.tag_list)
+        expect(data.map{|tag| tag['title']}).to match_array(task.tags.map(&:title))
       end
     end
   end

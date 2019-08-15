@@ -6,7 +6,7 @@ class TaskSerializer < ActiveModel::Serializer
     object.tags.sort_by(&:id).map do |tag|
       {
         id: tag.id.to_s,
-        title: tag.name
+        title: tag.title
       }
     end
   end

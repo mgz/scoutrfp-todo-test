@@ -7,11 +7,11 @@ class TaskUpdater
   
   private
   def self.set_task_tags(task, tags)
-    raise_if_too_many_tags(task, tags)
-    task.tag_list = tags
+    fail_if_too_many_tags(task, tags)
+    Tagger.new(task, tags).save_tags
   end
 
-  def self.raise_if_too_many_tags(task, tags)
+  def self.fail_if_too_many_tags(task, tags)
     if tags && tags.length > Task::MAX_TAGS
       task.errors.add(:base, "Too many tags (max #{Task::MAX_TAGS} allowed)")
       raise ActiveRecord::RecordInvalid.new(task)

@@ -7,7 +7,7 @@ RSpec.describe "/tasks", type: :request do
     it "deletes a Task" do
       prev_task_count = Task.count
       task = Task.first
-      task.tag_list = ['Some tag']
+      Tagger.new(task, ['Some tag']).save_tags
       task.save!
       
       delete "/api/v1/tasks/#{task.id}"

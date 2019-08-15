@@ -23,6 +23,7 @@ RSpec.describe "/tasks", type: :request do
       it "can add tags" do
         new_tags = ["Tag one", "Tag Two"]
         patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {
+          title: 'Title',
           tags: new_tags
         }}}
 
@@ -32,18 +33,18 @@ RSpec.describe "/tasks", type: :request do
       end
       
       it "can remove all tags" do
-        task.tag_list = ["Tag one", "Tag Two"]
-        task.save!
+        Tagger.new(task, ["Tag one", "Tag Two"]).save_tags
         task.reload
-        expect(task.tag_list.size).to eql(2)
+        expect(task.tags.count).to eql(2)
         
         patch "/api/v1/tasks/#{task.id}", params: {data: {attributes: {
+          title: 'Title',
           tags: []
         }}}
 
         task.reload
-        expect(task.tag_list.size).to eql(0)
-  
+        expect(task.tags.count).to eql(0)
+                
         expect(json['data']['relationships']['tags']['data'].length).to eql(0)
       end
     end

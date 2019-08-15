@@ -1,5 +1,6 @@
 class Task < ApplicationRecord
-  acts_as_taggable
+  has_many :taggings
+  has_many :tags, through: :taggings
   
   validates_presence_of :title
   validates :title, length: { maximum: 200 }
