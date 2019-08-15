@@ -22,7 +22,7 @@ class Api::V1::TasksController < ApplicationController
   
   private
   def task_params
-    params.require(:data).require(:attributes).permit(:title)
+    params.require(:data).require(:attributes).permit(:title, tags: [])
   end
 
   def task
