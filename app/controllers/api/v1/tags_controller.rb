@@ -6,23 +6,14 @@ class Api::V1::TagsController < ApplicationController
 
   def create
     tag = Tag.new(tag_params)
-    if tag.save
-      render json: tag
-    else
-      render_jsonapi_error_for(tag)
-    end
+    tag.save!
+    render json: tag
   end
 
   def update
-    if (tag = Tag.find_by_id(params[:id]))
-      if tag.update(tag_params)
-        render json: tag
-      else
-        render_jsonapi_error_for(tag)
-      end
-    else
-      render_resource_not_found(Tag)
-    end
+    tag = Tag.find(params[:id])
+    tag.update!(tag_params)
+    render json: tag
   end
 
   private

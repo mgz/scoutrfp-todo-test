@@ -1,6 +1,4 @@
 class Api::V1::TasksController < ApplicationController
-  before_action :find_task, only: [:update, :destroy]
-  
   def index
     tasks = Task.all.includes(:tags)
     render json: tasks
@@ -8,34 +6,18 @@ class Api::V1::TasksController < ApplicationController
   
   def create
     task = Task.new(task_params)
-    if task.save
-      render json: task
-    else
-      render_jsonapi_error_for(task)
-    end
+    task.save!
+    render json: task
   end
   
   def update
-    if TaskUpdater.call(@task, task_params, self)
-      render json: @task
-    else
-      render_jsonapi_error_for(@task)
-    end
+    TaskUpdater.call(task, task_params)
+    render json: task
   end
   
   def destroy
-    if @task.destroy
-      head :ok
-    else
-      render json: {
-        errors: [
-          {
-            status: 500,
-            title: 'Error destroying task'
-          }
-        ]
-      }, status: :internal_server_error
-    end
+    task.destroy
+    head :ok
   end
   
   private
@@ -43,10 +25,7 @@ class Api::V1::TasksController < ApplicationController
     params.require(:data).require(:attributes).permit(:title)
   end
 
-  def find_task
-    unless (@task = Task.find_by_id(params[:id]))
-      render_resource_not_found(Task)
-      return false
-    end
+  def task
+    @task ||= Task.find(params[:id])
   end
 end
